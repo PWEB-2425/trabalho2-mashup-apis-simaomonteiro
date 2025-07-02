@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Login ou Registo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input name="username" placeholder="Usuário" required>
+      <input name="password" type="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <h2>Registar</h2>
+    <form id="registerForm">
+      <input name="username" placeholder="Usuário" required>
+      <input name="password" type="password" placeholder="Senha" required>
+      <button type="submit">Criar conta</button>
+    </form>
+
+    <p id="mensagem"></p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const mensagem = document.getElementById('mensagem');
+
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = new FormData(registerForm);
+
+        const res = await fetch('/auth/register', {
+          method: 'POST',
+          body: new URLSearchParams(data),
+        });
+
+        const text = await res.text();
+        if (res.redirected) {
+          registerForm.style.display = 'none';
+          loginForm.style.display = 'block';
+        } else {
+          mensagem.textContent = text;
+        }
+      });
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = new FormData(loginForm);
+
+        const res = await fetch('/auth/login', {
+          method: 'POST',
+          body: new URLSearchParams(data),
+        });
+
+        if (res.redirected) {
+          window.location.href = '/club';
+        } else {
+          mensagem.textContent = 'Credenciais inválidas.';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
